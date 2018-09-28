@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Flunt.Validations;
 using PaymentContext.Domain.ValueObjects;
 using PaymentContext.Shared.Entities;
 
@@ -10,7 +11,7 @@ namespace PaymentContext.Domain.Entities
     {
 
         private List<Subscription> _subscriptions;
-        
+
         public Student(Name name, Document document, Email email)
         {
             Name = name;
@@ -19,7 +20,7 @@ namespace PaymentContext.Domain.Entities
             _subscriptions = new List<Subscription>();
 
             //agrupa as notificações
-            AddNotifications(name,document,email);
+            AddNotifications(name, document, email);
 
         }
 
@@ -33,14 +34,26 @@ namespace PaymentContext.Domain.Entities
 
         public void AddSubscription(Subscription subscription)
         {
-            //se tiver uma assinatura ativa, cancela.
-            //se o nome nao tiver 30 caracteres
+            var hasSubscriptionActive = false;
 
-            foreach (var sub in this.Subscriptions)
+            foreach (var sub in _subscriptions)
             {
-                sub.Inactivate();
+                if (sub.Active)
+                    hasSubscriptionActive = true;
             }
-            this._subscriptions.Add(subscription);
+
+            //por contrato do flunt
+            /*AddNotifications(new Contract()
+            .Requires().
+            IsFalse(hasSubscriptionActive, "Student.Subscriptions", "Você já tem uma assinatura ativa."));*/
+
+            //alternativa
+            if(hasSubscriptionActive)
+            {
+                AddNotification("Student.Subscriptions", "Você já tem uma assinatura ativa.");
+            }
+
+
         }
     }
 }
