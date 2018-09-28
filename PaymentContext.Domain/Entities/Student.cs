@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using PaymentContext.Domain.ValueObjects;
@@ -9,6 +10,7 @@ namespace PaymentContext.Domain.Entities
     {
 
         private List<Subscription> _subscriptions;
+        
         public Student(Name name, Document document, Email email)
         {
             Name = name;
@@ -16,11 +18,14 @@ namespace PaymentContext.Domain.Entities
             Email = email;
             _subscriptions = new List<Subscription>();
 
+            //agrupa as notificações
+            AddNotifications(name,document,email);
+
         }
 
         public Name Name;
 
-    
+
         public Document Document { get; private set; }
         public Email Email { get; private set; }
         public Address Address { get; private set; }
@@ -28,6 +33,9 @@ namespace PaymentContext.Domain.Entities
 
         public void AddSubscription(Subscription subscription)
         {
+            //se tiver uma assinatura ativa, cancela.
+            //se o nome nao tiver 30 caracteres
+
             foreach (var sub in this.Subscriptions)
             {
                 sub.Inactivate();
