@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Flunt.Validations;
@@ -10,7 +9,7 @@ namespace PaymentContext.Domain.Entities
     public class Student : Entity
     {
 
-        private List<Subscription> _subscriptions;
+        private IList<Subscription> _subscriptions;
 
         public Student(Name name, Document document, Email email)
         {
@@ -43,15 +42,21 @@ namespace PaymentContext.Domain.Entities
             }
 
             //por contrato do flunt
-            /*AddNotifications(new Contract()
-            .Requires().
-            IsFalse(hasSubscriptionActive, "Student.Subscriptions", "Você já tem uma assinatura ativa."));*/
+            AddNotifications(new Contract()
+            .Requires()
+            .IsFalse(hasSubscriptionActive, "Student.Subscriptions", "Você já tem uma assinatura ativa.")
+            .AreNotEquals(0, subscription.Payments.Count, "Student.Subscription.Payments", "Esta assinatura não possui pagamentos")
+
+            );
+
+            if (Valid)
+                _subscriptions.Add(subscription);
 
             //alternativa
-            if(hasSubscriptionActive)
-            {
-                AddNotification("Student.Subscriptions", "Você já tem uma assinatura ativa.");
-            }
+            // if(hasSubscriptionActive)
+            // {
+            //     AddNotification("Student.Subscriptions", "Você já tem uma assinatura ativa.");
+            // }
 
 
         }
