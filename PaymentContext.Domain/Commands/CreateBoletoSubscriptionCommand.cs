@@ -1,16 +1,18 @@
 using System;
+using Flunt.Notifications;
 using PaymentContext.Domain.Enums;
+using PaymentContext.Shared.Commands;
 
 namespace PaymentContext.Domain.Commands
 {
-    public class CreateBoletoSubscriptionCommand
+    public class CreateBoletoSubscriptionCommand : Notifiable,  ICommand
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Document { get; private set; }
         public string Email { get; set; }
-        public string Barcode { get; private set; }
-        public string BoletoNumber { get; private set; }
+        public string Barcode { get;  set; }
+        public string BoletoNumber { get;  set; }
         public string PaymentNumber { get; set; }
         public DateTime PaidDate { get; set; }
         public DateTime ExpireDate { get; set; }
@@ -28,6 +30,10 @@ namespace PaymentContext.Domain.Commands
         public string ZipCode { get; set; }
         public string PayerEmail { get; set; }
 
+        public void Validate()
+        {
+            throw new NotImplementedException();
+        }
     }
 
 }
