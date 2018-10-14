@@ -10,7 +10,7 @@ namespace PaymentContext.Domain.Commands
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public string Document { get; private set; }
+        public string Document { get; set; }
         public string Email { get; set; }
         public string Barcode { get;  set; }
         public string BoletoNumber { get;  set; }

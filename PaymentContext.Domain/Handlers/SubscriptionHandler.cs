@@ -12,7 +12,7 @@ using PaymentContext.Shared.Handlers;
 namespace PaymentContext.Domain.Handlers
 {
     public class SubscriptionHandler :
-    Notifiable, 
+    Notifiable,
     IHandler<CreateBoletoSubscriptionCommand>,
     IHandler<CreatePayPalSubscriptionCommand>
     {
@@ -20,10 +20,10 @@ namespace PaymentContext.Domain.Handlers
         private readonly IStudentRepository _repository;
         public readonly IEmailService _emailService;
 
-        public SubscriptionHandler(IStudentRepository repository,  IEmailService emailService)
+        public SubscriptionHandler(IStudentRepository repository, IEmailService emailService)
         {
             this._repository = repository;
-            _emailService= emailService;
+            _emailService = emailService;
         }
 
         public ICommandResult Handle(CreateBoletoSubscriptionCommand command)
@@ -62,29 +62,35 @@ namespace PaymentContext.Domain.Handlers
             var subscription = new Subscription(DateTime.Now.AddMonths(1));
 
             var payment = new BoletoPayment(
-                command.Barcode, 
-                command.BoletoNumber, 
+                command.Barcode,
+                command.BoletoNumber,
                 command.PaidDate,
-                command.ExpireDate, 
-                command.Total, 
-                command.TotalPaid, 
+                command.ExpireDate,
+                command.Total,
+                command.TotalPaid,
                 command.Payer,
                 new Document(command.PayerDocument, command.PayerDocumentType),
                 address,
                 email);
             //Relacionamentos.
             subscription.AddPayment(payment);
-            student.AddSubscription(subscription);   
+            student.AddSubscription(subscription);
 
             //agrupar as validacoes
-            AddNotifications(name,document,email,address,student,subscription,payment);
+            AddNotifications(name, document, email, address, student, subscription, payment);
+
+            //checar as notificacoes
+            if (Invalid)
+            {
+                return new CommandResult(false, "não foi possivel realizar sua assinatura.");
+            }
 
             //salvar as informações
             _repository.CreateSubscription(student);
 
             //enviar email de boas vindas.
-             
-            _emailService.Send(student.Name.ToString(), student.Email.Address,"Bem vindo ao balta.io","Sua assinatura foi criada");
+
+            _emailService.Send(student.Name.ToString(), student.Email.Address, "Bem vindo ao balta.io", "Sua assinatura foi criada");
             //retornar informacos
 
             return new CommandResult(true, "Assinatura realizada com sucesso.");
@@ -92,7 +98,7 @@ namespace PaymentContext.Domain.Handlers
 
         public ICommandResult Handle(CreatePayPalSubscriptionCommand command)
         {
-              //Fail fast Validations
+            //Fail fast Validations
             /*command.Validate();
             if (command.Invalid)
             {
@@ -127,29 +133,29 @@ namespace PaymentContext.Domain.Handlers
             var subscription = new Subscription(DateTime.Now.AddMonths(1));
 
             var payment = new PayPalPayment(
-                command.TransactionCode, 
-                
+                command.TransactionCode,
+
                 command.PaidDate,
-                command.ExpireDate, 
-                command.Total, 
-                command.TotalPaid, 
+                command.ExpireDate,
+                command.Total,
+                command.TotalPaid,
                 command.Payer,
                 new Document(command.PayerDocument, command.PayerDocumentType),
                 address,
                 email);
             //Relacionamentos.
             subscription.AddPayment(payment);
-            student.AddSubscription(subscription);   
+            student.AddSubscription(subscription);
 
             //agrupar as validacoes
-            AddNotifications(name,document,email,address,student,subscription,payment);
+            AddNotifications(name, document, email, address, student, subscription, payment);
 
             //salvar as informações
             _repository.CreateSubscription(student);
 
             //enviar email de boas vindas.
-             
-            _emailService.Send(student.Name.ToString(), student.Email.Address,"Bem vindo ao balta.io","Sua assinatura foi criada");
+
+            _emailService.Send(student.Name.ToString(), student.Email.Address, "Bem vindo ao balta.io", "Sua assinatura foi criada");
             //retornar informacos
 
             return new CommandResult(true, "Assinatura realizada com sucesso.");
