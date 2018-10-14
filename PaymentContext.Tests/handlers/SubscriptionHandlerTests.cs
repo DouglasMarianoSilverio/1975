@@ -44,7 +44,8 @@ namespace PaymentContext.Tests
             command.ZipCode = "12235340";
             command.PayerEmail = "batman@dc.com";
             handler.Handle(command);
-            Assert.AreEqual(false,handler.Valid);
+            Assert.AreEqual(false, handler.Valid);
+
 
 
         }
